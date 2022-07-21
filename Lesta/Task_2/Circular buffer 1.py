@@ -1,25 +1,26 @@
-from typing import Optional, Any
+# coding=utf-8
 
 
-class CircularBuffer:
+class CircularBuffer(object):
     """
     Класс реализующий кольцевой буфер.
     """
-    def __init__(self, size: int):
+
+    def __init__(self, size):
         self.__buffer = [None] * size
         self.__length = size
         self.__busy = 0
         self.__head = 0
         self.__tail = 0
 
-    def __shift_tail(self) -> None:
+    def __shift_tail(self):
         """
         Смещение индекса первого пришедшего элемента
         :return: None
         """
         self.__tail = (self.__tail + 1) % self.__length
 
-    def add_item(self, other: Any, return_flag=False, overwrite=True) -> Optional[Any]:
+    def add_item(self, other, return_flag=False, overwrite=True):
         """
         Добавление элемента в буфер.
         :param other: Any Добавляемый элемент.
@@ -41,7 +42,7 @@ class CircularBuffer:
         self.__head = (self.__head + 1) % self.__length
         return result
 
-    def remove_item(self) -> Optional[Any]:
+    def remove_item(self):
         """
         Удаление объектов из буфера по FIFO.
         :return: Optional[Any]
