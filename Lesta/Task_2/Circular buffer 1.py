@@ -59,7 +59,7 @@ class CircularBuffer(object):
         return '[' + ','.join(map(str, self.__buffer)) + ']'
 
     def __str__(self):
-        return 'cb:[' + ','.join(map(lambda x: str(x) if x is not None else '', self.__buffer)) + ']'
+        return 'circular_buffer:[' + ','.join(map(lambda x: str(x) if x is not None else '', self.__buffer)) + ']'
 
     def __len__(self):
         return self.__busy
@@ -73,12 +73,12 @@ class CircularBuffer(object):
 
 if __name__ == '__main__':
     cb = CircularBuffer(10)
-    for i in range(100):
-        cb.add_item(i)
+    for i in xrange(100):
+        print cb.add_item(i, return_flag=True)
 
-        print(cb)
+        print cb
     # for i in cb:
     #     print(i)
-    for i in range(len(cb)):
+    for i in xrange(len(cb)):
         cb.remove_item()
-        print(cb)
+        print cb
