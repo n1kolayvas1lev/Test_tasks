@@ -38,11 +38,32 @@ def extract_sample(possible_string: list, name_samples: list) -> str:
         return name[0][0].capitalize()
 
 
+def checks(result: list, dialogue_index: Optional[int | None], internal: bool, message: str) -> Optional[str | list]:
+    """
+    Обработка результата выполнения функции.
+    :param result: Список сформированный из строки файла.
+    :param dialogue_index: Индекс соответствующий номеру строки из файла.
+    :param internal: Флаг, что надо вернуть необработанный список для внутренней обработки.
+    :param message: Сообщение при несоблюдении условий.
+    :return: Строку, если обработка внутри функции, список, если вне.
+    """
+    if internal:
+        return result
+    if result:
+        if dialogue_index is not None:
+            return f'Диалог: {result[0][0]}, строка: {result[0][1]}, реплика: {result[0][3]}'
+        else:
+            return [f'Диалог: {result[_][0]}, строка: {result[_][1]}, реплика: {result[_][3]}'
+                    for _ in range(len(result))]
+    else:
+        return message
+
+
 def greetings(sequence: list, dialogue_index: Optional[int | None] = None, internal: bool = False)\
         -> Optional[list | str]:
     """
     Извлекает список реплик с приветствием менеджера.
-    :param internal: Флаг, что надо вернуть необработанный список.
+    :param internal: Флаг, что надо вернуть необработанный список для внутренней обработки.
     :param sequence: Текстовая расшифровка речи менеджера.
     :param dialogue_index: Номер диалога.
     :return:Строку с указанием диалога и строки с приветствием или список строк содержащих приветствие,
@@ -55,23 +76,15 @@ def greetings(sequence: list, dialogue_index: Optional[int | None] = None, inter
         'доброе утро',
     ]
     result = entry_check(greetings_samples, sequence, dialogue_index)
-    if internal:
-        return result
-    if result:
-        if dialogue_index is not None:
-            return f'Диалог: {result[0][0]}, строка: {result[0][1]}, реплика: {result[0][3]}'
-        else:
-            return [f'Диалог: {result[_][0]}, строка: {result[_][1]}, реплика: {result[_][3]}'
-                    for _ in range(len(result))]
-    else:
-        return 'Нет приветствия.'
+    message = 'Нет приветствия.'
+    return checks(result, dialogue_index, internal, message)
 
 
 def introduction(sequence: list, dialogue_index: Optional[int | None] = None, internal: bool = False)\
         -> Optional[list | str]:
     """
     Извлекает список реплик, где менеджер представился.
-    :param internal: Флаг, что надо вернуть необработанный список.
+    :param internal: Флаг, что надо вернуть необработанный список для внутренней обработки.
     :param sequence: Текстовая расшифровка речи менеджера.
     :param dialogue_index: Номер диалога.
     :return:Строку с указанием диалога и строки и приветствием или список строк содержащих представление,
@@ -86,16 +99,8 @@ def introduction(sequence: list, dialogue_index: Optional[int | None] = None, in
         'здравствуйте это \w+'
     ]
     result = entry_check(introduction_samples, sequence, dialogue_index)
-    if internal:
-        return result
-    if result:
-        if dialogue_index is not None:
-            return f'Диалог: {result[0][0]}, строка: {result[0][1]}, реплика: {result[0][3]}'
-        else:
-            return [f'Диалог: {result[_][0]}, строка: {result[_][1]}, реплика: {result[_][3]}'
-                    for _ in range(len(result))]
-    else:
-        return 'Не представился.'
+    message = 'Не представился.'
+    return checks(result, dialogue_index, internal, message)
 
 
 def sales_name(sequence: list, dialogue_index: int) -> str:
@@ -141,7 +146,7 @@ def company_name(sequence: list, dialogue_index: int) -> str:
 def goodbye(sequence: list, dialogue_index: Optional[int | None] = None, internal: bool = False) -> Optional[list | str]:
     """
     Извлекает список реплик, где менеджер попрощался.
-    :param internal: Флаг, что надо вернуть необработанный список.
+    :param internal: Флаг, что надо вернуть необработанный список для внутренней обработки.
     :param sequence: Текстовая расшифровка речи менеджера.
     :param dialogue_index: Номер диалога.
     :return: Строку с указанием диалога и строки с прощанием или список строк содержащих прощание,
@@ -157,16 +162,8 @@ def goodbye(sequence: list, dialogue_index: Optional[int | None] = None, interna
         'хорошего вечера',
     ]
     result = entry_check(goodbye_samples, sequence, dialogue_index)
-    if internal:
-        return result
-    if result:
-        if dialogue_index is not None:
-            return f'Диалог: {result[0][0]}, строка: {result[0][1]}, реплика: {result[0][3]}'
-        else:
-            return [f'Диалог: {result[_][0]}, строка: {result[_][1]}, реплика: {result[_][3]}'
-                    for _ in range(len(result))]
-    else:
-        return 'Нет прощания.'
+    message = 'Нет прощания.'
+    return checks(result, dialogue_index, internal, message)
 
 
 def script_check(sequence: list, dialogue_index: int) -> bool:
@@ -189,19 +186,34 @@ salesman_speech = list(filter(lambda x: x[2] == 'manager', content))
 for i in salesman_speech:
     i[0] = int(i[0])
     i[1] = int(i[1])
+# 1. Извлекать реплики с приветствием – где менеджер поздоровался.
+
 # for i in range(6):
 #     print(greetings(salesman_speech, i))
 # print(*greetings(salesman_speech), sep='\n')
-# for i in range(6):
-#     print(goodbye(salesman_speech, i))
-# print(*goodbye(salesman_speech), sep='\n')
-# for i in range(6):
-#     print(script_check(salesman_speech, i))
+
+#2. Извлекать реплики, где менеджер представил себя.
 # for i in range(6):
 #     print(introduction(salesman_speech, i))
 # print(*introduction(salesman_speech), sep='\n')
+
+# 3. Извлекать имя менеджера.
+
 # for i in range(6):
 #     print(sales_name(salesman_speech, i))
-# print(*list(filter(lambda x: 'бизнес' in x[3], salesman_speech)), sep='\n')
+
+# 4. Извлекать название компании.
+
 # for i in range(6):
 #     print(company_name(salesman_speech, i), sep='\n')
+
+# 5. Извлекать реплики, где менеджер попрощался.
+
+# for i in range(6):
+#     print(goodbye(salesman_speech, i))
+
+# 6. Проверять требование к менеджеру: «В каждом диалоге обязательно необходимо поздороваться и попрощаться с клиентом»
+
+# for i in range(6):
+#     print(script_check(salesman_speech, i))
+# print(*goodbye(salesman_speech), sep='\n')
